@@ -14,6 +14,14 @@ var budgetController = (function(){
 		this.value = value;
 	}
 
+	var calculateTotal = function(type){
+		var sum = 0;
+		data.allItems[type].forEach(curr){
+			sum += curr.value
+		}
+
+		data.totals[type] = sum;
+	}
 
 	var data = {
 		allItems: {
@@ -24,6 +32,8 @@ var budgetController = (function(){
 			exp: 0,
 			inc: 0
 		}
+		budget: 0,
+		precentage: -1;
 	}
 
 	return {
@@ -64,7 +74,30 @@ var budgetController = (function(){
 			return newItem;
 		},
 
-		testing : function(){
+		calculateBudget: function(){
+
+			//Calculate total income and expenses
+			calculateTotal('inc');
+			calculateTotal('exp');
+
+			//Calulate the budget: income - expenses
+			data.budget = data.totals.exp - data.totals.inc;
+
+			//Calculate the precentage of income what we spent
+			data.precentage = Math.round((data.totals.exp / data.totals.inc) * 100);
+ 
+		}
+
+		getBudget: function (){
+			return {
+				budget: data.budget,
+				totalInc: data.totals.inc,
+				totalExp: data.totals.exp,
+				precentage: data.precentage
+			}
+		}
+
+		testing: function(){
 			console.log(data);
 		}
 	}
@@ -98,7 +131,7 @@ var UIController = (function(){
 			return {
 				type: document.querySelector(DOMStrings.inputType).value,
 				description: document.querySelector(DOMStrings.inputDescription).value,
-				value: document.querySelector(DOMStrings.inputValue).value
+				value: parseFloat(document.querySelector(DOMStrings.inputValue).value)
 			}
 
 		},
@@ -164,6 +197,9 @@ var controller = (function(budgetCtrl, UICtrl){
 
 	//init function
 	var setupEventListeners = function(){
+		//from UI controler returned DOMStrings object
+		var DOM = UICtrl.getDOMstrings();
+		// console.log(DOM);
 
 		//action 1 after enter is pressed, it calls ctrlAddItem
 		document.addEventListener('keypress', function(event){
@@ -176,26 +212,42 @@ var controller = (function(budgetCtrl, UICtrl){
 		document.querySelector(DOM.inputBtn).addEventListener('click', ctrlAddItem);
 	}
 
-	//from UI controler returned DOMStrings object
-	var DOM = UICtrl.getDOMstrings();
-	// console.log(DOM);
+	var updateBudget = function(){
+
+		//Calculate the budget
+		budgetCtrl.calculateBudget();
+
+		//Return a budget from budgetCtrl save it to var because we return 4 items
+		var budget = budgetCtrl.getBudget();
+
+
+	}
+
+
 
 	var ctrlAddItem = function(){
+
 		var input, newItem;
 		//get input field data from UI controller
 		input = UICtrl.getInput();
-
 		// console.log(input)
 
-		//add item to budget controller
-		//istrturininas objektas is budget controller todel saugoti reikia i kintamaji
-		newItem = budgetCtrl.addItem(input.type, input.description, input.value);
+		if(input.description !=="" && !isNaN(input.value) && input.value > 0){
 
-		//kviesdamas addListItem funkcija idedu objekta bei type
-		var item = UICtrl.addListItem(newItem, input.type);
+			//add item to budget controller
+			//istrturininas objektas is budget controller todel saugoti reikia i kintamaji
+			newItem = budgetCtrl.addItem(input.type, input.description, input.value);
 
-		//clear the fields is UiController
-		UICtrl.clearFields();
+			//kviesdamas addListItem funkcija idedu objekta bei type
+			var item = UICtrl.addListItem(newItem, input.type);
+
+			//clear the fields is UiController
+			UICtrl.clearFields();
+		}
+
+		else{
+			console.log('Please fill input fields');
+		}
 
 	} 
 
