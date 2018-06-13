@@ -126,6 +126,31 @@ var UIController = (function(){
 
 		},
 
+		clearFields: function(){
+			var fields, fieldsArr;
+
+			//paselektinu inout,desc it input.val
+			//gaunu kaip lista, todel reikia verst i masyva
+			fields = document.querySelectorAll(DOMStrings.inputDescription + ', '
+			+ DOMStrings.inputValue);
+
+			//listo vertimas i masyva, call nes kveciu fields ir imu is globalaus Array slice
+			fieldsArr = Array.prototype.slice.call(fields);
+
+			//paverstas listas i masyva
+			//curr tai input desc
+			//index tai indexas siu atveju 2, tai 0 arba 1
+			//array visas fieldsArr
+			fieldsArr.forEach(function(current, index, array){
+				current.value = "";
+
+			});
+
+			// grazina i description focusa
+			fieldsArr[0].focus()
+
+		},
+
 		getDOMstrings: function(){
 			return DOMStrings
 		}
@@ -159,13 +184,19 @@ var controller = (function(budgetCtrl, UICtrl){
 		var input, newItem;
 		//get input field data from UI controller
 		input = UICtrl.getInput();
+
 		// console.log(input)
+
 		//add item to budget controller
 		//istrturininas objektas is budget controller todel saugoti reikia i kintamaji
 		newItem = budgetCtrl.addItem(input.type, input.description, input.value);
 
 		//kviesdamas addListItem funkcija idedu objekta bei type
 		var item = UICtrl.addListItem(newItem, input.type);
+
+		//clear the fields is UiController
+		UICtrl.clearFields();
+
 	} 
 
 	return {
