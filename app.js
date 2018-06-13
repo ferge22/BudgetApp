@@ -1,5 +1,5 @@
 'use strict'
-//BUDGET CONTROLLER
+//BUDGET CONTROLLER----------------------------------------------------------------------------------------------
 var budgetController = (function(){
 
 	var Income = function(id, description, value){
@@ -16,9 +16,9 @@ var budgetController = (function(){
 
 	var calculateTotal = function(type){
 		var sum = 0;
-		data.allItems[type].forEach(curr){
-			sum += curr.value
-		}
+		data.allItems[type].forEach(function(curr){
+			sum += curr.value;
+		})
 
 		data.totals[type] = sum;
 	}
@@ -31,9 +31,10 @@ var budgetController = (function(){
 		totals: {
 			exp: 0,
 			inc: 0
-		}
+		},
+
 		budget: 0,
-		precentage: -1;
+		precentage: -1
 	}
 
 	return {
@@ -81,21 +82,26 @@ var budgetController = (function(){
 			calculateTotal('exp');
 
 			//Calulate the budget: income - expenses
-			data.budget = data.totals.exp - data.totals.inc;
+			data.budget = data.totals.inc - data.totals.exp;
 
 			//Calculate the precentage of income what we spent
-			data.precentage = Math.round((data.totals.exp / data.totals.inc) * 100);
+			if(data.totals.inc > 0){
+				data.precentage = Math.round((data.totals.exp / data.totals.inc) * 100);
+			}
+			else{
+				data.precentage = -1;
+			}
  
-		}
+		},
 
-		getBudget: function (){
+		getBudget: function(){
 			return {
 				budget: data.budget,
 				totalInc: data.totals.inc,
 				totalExp: data.totals.exp,
 				precentage: data.precentage
-			}
-		}
+			};
+		},
 
 		testing: function(){
 			console.log(data);
@@ -111,7 +117,7 @@ var budgetController = (function(){
 })();
 
 
-//UI CONTROLLER
+//UI CONTROLLER---------------------------------------------------------------------------------------------------
 var UIController = (function(){
 
 	//all DOM strings
@@ -121,7 +127,12 @@ var UIController = (function(){
 		inputValue: '.add__value',
 		inputBtn: '.add__btn',
 		incomeContainer: '.income__list',
-		expensesContainer: '.expenses__list'
+		expensesContainer: '.expenses__list',
+		budgetLabel: '.budget__value',
+		incomeLabel: '.budget__income--value',
+		expensesLabel: '.budget__expenses--value',
+		precentageLabel: '.budget__expenses--percentage'
+
 	}
 
 	//return to public, than other controler can take what i returned
@@ -184,6 +195,13 @@ var UIController = (function(){
 
 		},
 
+		displayBudget: function(obj){
+			document.querySelector(DOMStrings.budgetLabel).textContent = obj.budget;
+			document.querySelector(DOMStrings.incomeLabel).textContent = obj.totalInc;
+			document.querySelector(DOMStrings.expensesLabel).textContent = obj.totalExp;
+			document.querySelector(DOMStrings.precentageLabel).textContent = obj.precentage;
+		},
+
 		getDOMstrings: function(){
 			return DOMStrings
 		}
@@ -192,7 +210,7 @@ var UIController = (function(){
 })();
 
 //ateina budgetController apacioje ir jo vardas visada bus budgetCtrl
-//GLOBAL APP CONTROLLER
+//GLOBAL APP CONTROLLER--------------------------------------------------------------------------------------------
 var controller = (function(budgetCtrl, UICtrl){
 
 	//init function
@@ -219,7 +237,10 @@ var controller = (function(budgetCtrl, UICtrl){
 
 		//Return a budget from budgetCtrl save it to var because we return 4 items
 		var budget = budgetCtrl.getBudget();
+		// console.log(budget);
 
+		//Display budget to UI
+		UICtrl.displayBudget(budget);
 
 	}
 
@@ -243,6 +264,10 @@ var controller = (function(budgetCtrl, UICtrl){
 
 			//clear the fields is UiController
 			UICtrl.clearFields();
+
+			//calculate and update Budget
+
+			updateBudget();
 		}
 
 		else{
