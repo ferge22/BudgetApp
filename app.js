@@ -286,6 +286,11 @@ var controller = (function(budgetCtrl, UICtrl){
 
 	}
 
+	var updatePrecentage = function(){
+
+
+	}
+
 	var ctrlAddItem = function(){
 
 		var input, newItem;
@@ -307,6 +312,9 @@ var controller = (function(budgetCtrl, UICtrl){
 
 			//calculate and update Budget
 			updateBudget();
+
+			//calculate and update precentages
+			updatePrecentage();
 		}
 
 		else{
@@ -338,12 +346,14 @@ var controller = (function(budgetCtrl, UICtrl){
 			//delete item from data structure
 			budgetCtrl.deleteItem(type, ID);
 
-
 			//delete item from user interface
 			UICtrl.deleteListItem(itemId);
 
 			//update budget
 			updateBudget();
+
+			//calculate and update precentages
+			updatePrecentage();
 		}
 	} 
 
