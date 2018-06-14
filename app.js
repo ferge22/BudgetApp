@@ -75,6 +75,27 @@ var budgetController = (function(){
 			return newItem;
 		},
 
+		//delete item form array by type and id
+		deleteItem:  function(type, id){
+			var ids, index;
+
+			//mapas returinina nauja array todel prisiskiriam ids
+			ids = data.allItems[type].map(function(current){
+				return current.id
+				//grazins, pvz turim inc masyve 5 objektus su ids 1,2,6,7,8 tai ir tai grazins
+			});
+
+			//indexof grazins index number elemento masyve
+			//ids obj id, o id masyvo id
+			//pvz [1 2 5 6 7] tai obj ids = 6 , tai masyvo index(id) = 3!!!;
+			index = ids.indexOf(id);
+
+			if(index !== -1){
+				//index 
+				data.allItems[type].splice(index, 1);
+			}
+		},
+
 		calculateBudget: function(){
 
 			//Calculate total income and expenses
@@ -171,6 +192,17 @@ var UIController = (function(){
 
 		},
 
+		deleteListItem: function(selectorID){
+			var el;
+
+			//pradziai gauni ta elementa kur id stovi, kylu i virsu,
+			//dabar esu income__list, removeshild tada zemiau to list deletina
+			//visa elementa kuri nurodai removeChild
+			el = document.getElementById(selectorID);
+			el.parentNode.removeChild(el);
+
+		},
+
 		clearFields: function(){
 			var fields, fieldsArr;
 
@@ -254,8 +286,6 @@ var controller = (function(budgetCtrl, UICtrl){
 
 	}
 
-
-
 	var ctrlAddItem = function(){
 
 		var input, newItem;
@@ -285,7 +315,7 @@ var controller = (function(budgetCtrl, UICtrl){
 
 	};
 
-	//Event delegation, event bubbles-------------------------------------
+	//Event delegation, event bubbling-------------------------------------
 	// event, del to kad norim zinoti koks target elementas yra(ant kur paspaudem)
 	var ctrlDeleteItem = function(event){
 		var itemId, splitID, type, ID;
@@ -303,11 +333,17 @@ var controller = (function(budgetCtrl, UICtrl){
 			splitID = itemId.split('-');
 			// console.log(splitID);
 			type = splitID[0];
-			ID = splitID[1];
+			ID = parseInt(splitID[1]);
 
 			//delete item from data structure
+			budgetCtrl.deleteItem(type, ID);
+
 
 			//delete item from user interface
+			UICtrl.deleteListItem(itemId);
+
+			//update budget
+			updateBudget();
 		}
 	} 
 
