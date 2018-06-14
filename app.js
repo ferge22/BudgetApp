@@ -131,7 +131,8 @@ var UIController = (function(){
 		budgetLabel: '.budget__value',
 		incomeLabel: '.budget__income--value',
 		expensesLabel: '.budget__expenses--value',
-		precentageLabel: '.budget__expenses--percentage'
+		precentageLabel: '.budget__expenses--percentage',
+		container: '.container'
 
 	}
 
@@ -152,12 +153,12 @@ var UIController = (function(){
 			//Create html string with placeholder text
 			if(type === 'inc'){
 				element = DOMStrings.incomeContainer
-				html = '<div class="item clearfix" id="income-%id%"><div class="item__description">%description%</div><div class="right clearfix"><div class="item__value">%value%</div><div class="item__delete"><button class="item__delete--btn"><i class="ion-ios-close-outline"></i></button></div></div></div>'                     
+				html = '<div class="item clearfix" id="inc-%id%"><div class="item__description">%description%</div><div class="right clearfix"><div class="item__value">%value%</div><div class="item__delete"><button class="item__delete--btn"><i class="ion-ios-close-outline"></i></button></div></div></div>'                     
 			}
 
 			else if(type === 'exp'){
 				element = DOMStrings.expensesContainer
-				html = '<div class="item clearfix" id="expense-%id%"><div class="item__description">%description%</div><div class="right clearfix"><div class="item__value">%value%</div><div class="item__percentage">21%</div><div class="item__delete"><button class="item__delete--btn"><i class="ion-ios-close-outline"></i></button></div></div></div>'
+				html = '<div class="item clearfix" id="exp-%id%"><div class="item__description">%description%</div><div class="right clearfix"><div class="item__value">%value%</div><div class="item__percentage">21%</div><div class="item__delete"><button class="item__delete--btn"><i class="ion-ios-close-outline"></i></button></div></div></div>'
 			}
 
 			//Replace the placeholder text with some actual data
@@ -226,6 +227,9 @@ var controller = (function(budgetCtrl, UICtrl){
 		var DOM = UICtrl.getDOMstrings();
 		// console.log(DOM);
 
+		//action 2 after click on button is pressed, it calls ctrlAddItem
+		document.querySelector(DOM.inputBtn).addEventListener('click', ctrlAddItem);
+
 		//action 1 after enter is pressed, it calls ctrlAddItem
 		document.addEventListener('keypress', function(event){
 				if(event.keyCode === 13 || event.which === 13){
@@ -233,8 +237,7 @@ var controller = (function(budgetCtrl, UICtrl){
 				}
 		});
 
-		//action 2 after click on button is pressed, it calls ctrlAddItem
-		document.querySelector(DOM.inputBtn).addEventListener('click', ctrlAddItem);
+		document.querySelector(DOM.container).addEventListener('click', ctrlDeleteItem);
 	}
 
 	var updateBudget = function(){
@@ -273,7 +276,6 @@ var controller = (function(budgetCtrl, UICtrl){
 			UICtrl.clearFields();
 
 			//calculate and update Budget
-
 			updateBudget();
 		}
 
@@ -281,6 +283,32 @@ var controller = (function(budgetCtrl, UICtrl){
 			console.log('Please fill input fields');
 		}
 
+	};
+
+	//Event delegation, event bubbles-------------------------------------
+	// event, del to kad norim zinoti koks target elementas yra(ant kur paspaudem)
+	var ctrlDeleteItem = function(event){
+		var itemId, splitID, type, ID;
+		//paspaudus gauna ta html elementa
+		// console.log(event.target);
+
+		//Dom traversing, keliaujam auksciau nuo i elemento
+		//neveikia ant explorer
+		// console.log(event.target.closest('.item').id);
+
+		itemId = event.target.parentNode.parentNode.parentNode.parentNode.id
+
+		if(itemId){
+			//inc-1 -> inc ir 1 , tada atskitai type(inc) ir id(1)
+			splitID = itemId.split('-');
+			// console.log(splitID);
+			type = splitID[0];
+			ID = splitID[1];
+
+			//delete item from data structure
+
+			//delete item from user interface
+		}
 	} 
 
 	return {
