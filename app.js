@@ -6,13 +6,30 @@ var budgetController = (function(){
 		this.id = id;
 		this.description = description;
 		this.value = value;
-	}
+	};
 
 	var Expense = function(id, description, value){
 		this.id = id;
 		this.description = description;
 		this.value = value;
-	}
+		this.precentage = -1;
+	};
+
+	//cacl precentage
+	Expense.prototype.calcPrecentages = function(totalIncome){
+		if(totalIncome > 0){
+			this.precentage = Math.round((this.value / this.totalIncome) * 100);
+		}
+		else{
+			this.precentage = -1;
+		}
+	};
+
+	//get precentage
+	Expense.prototype.getPrecentages = function(){
+		//grazina is konstruktoriaus sukaicuota precentage
+		return this.precentage;
+	};
 
 	var calculateTotal = function(type){
 		var sum = 0;
@@ -21,7 +38,7 @@ var budgetController = (function(){
 		})
 
 		data.totals[type] = sum;
-	}
+	};
 
 	var data = {
 		allItems: {
@@ -122,6 +139,27 @@ var budgetController = (function(){
 				totalExp: data.totals.exp,
 				precentage: data.precentage
 			};
+		},
+
+		calculatePrecentages: function(){
+			//exp/total * 100;
+			//current tai index butent tas exp elementas masyve
+			//suskaiciavo kiekveinam exp obj procentus
+			//foreach nestorina i variable o tik padaro siuo atveju objekte sukaciuoja procentus
+			data.allItems.exp.forEach(function(current){
+				current.calcPrecentages();
+			});
+		},
+
+		getPrecentages: function(){
+			//map kai norim stroing kazkur informacija
+			// map kazka grazina todel isaugom i kintamaji
+			var allPrec = data.allItems.exp.map(function(cur){
+				//pvz 5 obj exp obj tai, 5 storins i allPrec var, veliau ji returiniam 
+				return cur.getPrecentages();
+			});
+
+			return allPrec;
 		},
 
 		testing: function(){
@@ -288,7 +326,14 @@ var controller = (function(budgetCtrl, UICtrl){
 
 	var updatePrecentage = function(){
 
+		//Calculate precentages
+		budgetContr.calculatePrecentages();
 
+		//Read precentages from the budgetContr
+		var precentages = budgetContr.getPrecentages();
+
+		//Update UI with new precentages
+		console.log(precentages);
 	}
 
 	var ctrlAddItem = function(){
