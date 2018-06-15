@@ -215,6 +215,15 @@ var UIController = (function(){
 
 	};
 
+	//lupinu per lista
+	var nodeListForEach = function(list, callback){
+			for(var i = 0; i< list.length; i++){
+				//mano calback function pareina i nodelistforeach funcion parametrus
+				//list[i] i current, o i i index
+				callback(list[i], i);
+			}
+	};
+
 	//return to public, than other controler can take what i returned
 	return {
 		getInput: function(){
@@ -309,15 +318,6 @@ var UIController = (function(){
 			//gaunu node lista
 			var fields = document.querySelectorAll(DOMStrings.expensesPrecLabel);
 
-			//lupinu per lista
-			var nodeListForEach = function(list, callback){
-				for(var i = 0; i< list.length; i++){
-					//mano calback function pareina i nodelistforeach funcion parametrus
-					//list[i] i current, o i i index
-					callback(list[i], i);
-				}
-			};
-
 			//nuo kur function prasideda tai ten  calbackas
 			nodeListForEach(fields, function(current, index){
 				if(percentages[index] > 0){
@@ -342,8 +342,25 @@ var UIController = (function(){
 			var months= ["January","February","March","April","May","June","July",
             "August","September","October","November","December"];
 			month = now.getMonth();
-			
+
 			document.querySelector(DOMStrings.dateLabel).innerHTML = year + ' ' + months[month];
+		},
+
+
+		changedType: function(){
+
+			var fields = document.querySelectorAll(
+				DOMStrings.inputType + ',' +
+				DOMStrings.inputDescription + ',' +
+				DOMStrings.inputValue);
+
+			nodeListForEach(fields, function(cur){
+				cur.classList.toggle('red-focus')
+
+			});
+
+			document.querySelector(DOMStrings.inputBtn).classList.toggle('red');
+
 		},
 
 
@@ -375,6 +392,9 @@ var controller = (function(budgetCtrl, UICtrl){
 		});
 
 		document.querySelector(DOM.container).addEventListener('click', ctrlDeleteItem);
+
+		//change inc/exp color
+		document.querySelector(DOM.inputType).addEventListener('change', UICtrl.changedType);
 	}
 
 	var updateBudget = function(){
