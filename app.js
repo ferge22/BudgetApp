@@ -242,7 +242,7 @@ var UIController = (function(){
 			//Replace the placeholder text with some actual data
 			newHtml = html.replace('%id%', obj.id);
 			newHtml = newHtml.replace('%description%', obj.description);
-			newHtml = newHtml.replace('%value%', formatNumber(obj.value), type);
+			newHtml = newHtml.replace('%value%', formatNumber(obj.value, type));
 
 			//Insert HTML to dom
 			document.querySelector(element).insertAdjacentHTML('beforeend', newHtml);
@@ -286,9 +286,12 @@ var UIController = (function(){
 		},
 
 		displayBudget: function(obj){
-			document.querySelector(DOMStrings.budgetLabel).textContent = obj.budget;
-			document.querySelector(DOMStrings.incomeLabel).textContent = obj.totalInc;
-			document.querySelector(DOMStrings.expensesLabel).textContent = obj.totalExp;
+			var type;
+			obj.budget > 0 ? type = 'inc' : type = 'exp';
+
+			document.querySelector(DOMStrings.budgetLabel).textContent = formatNumber(obj.budget, type);
+			document.querySelector(DOMStrings.incomeLabel).textContent =  formatNumber(obj.totalInc, 'inc');
+			document.querySelector(DOMStrings.expensesLabel).textContent =  formatNumber(obj.totalExp, 'exp');
 
 
 			if(obj.precentage > 0){
