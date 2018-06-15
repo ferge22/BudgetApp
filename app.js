@@ -18,7 +18,7 @@ var budgetController = (function(){
 	//cacl precentage
 	Expense.prototype.calcPrecentages = function(totalIncome){
 		if(totalIncome > 0){
-			this.precentage = Math.round((this.value / this.totalIncome) * 100);
+			this.precentage = Math.round((this.value / totalIncome) * 100);
 		}
 		else{
 			this.precentage = -1;
@@ -147,7 +147,7 @@ var budgetController = (function(){
 			//suskaiciavo kiekveinam exp obj procentus
 			//foreach nestorina i variable o tik padaro siuo atveju objekte sukaciuoja procentus
 			data.allItems.exp.forEach(function(current){
-				current.calcPrecentages();
+				current.calcPrecentages(data.totals.inc);
 			});
 		},
 
@@ -280,6 +280,8 @@ var UIController = (function(){
 			}
 		},
 
+		
+
 		getDOMstrings: function(){
 			return DOMStrings
 		}
@@ -327,10 +329,10 @@ var controller = (function(budgetCtrl, UICtrl){
 	var updatePrecentage = function(){
 
 		//Calculate precentages
-		budgetContr.calculatePrecentages();
+		budgetCtrl.calculatePrecentages();
 
 		//Read precentages from the budgetContr
-		var precentages = budgetContr.getPrecentages();
+		var precentages = budgetCtrl.getPrecentages();
 
 		//Update UI with new precentages
 		console.log(precentages);
