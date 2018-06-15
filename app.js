@@ -143,7 +143,7 @@ var budgetController = (function(){
 
 		calculatePrecentages: function(){
 			//exp/total * 100;
-			//current tai index butent tas exp elementas masyve
+			//current tai butent tas exp elementas masyve
 			//suskaiciavo kiekveinam exp obj procentus
 			//foreach nestorina i variable o tik padaro siuo atveju objekte sukaciuoja procentus
 			data.allItems.exp.forEach(function(current){
@@ -153,7 +153,7 @@ var budgetController = (function(){
 
 		getPrecentages: function(){
 			//map kai norim stroing kazkur informacija
-			// map kazka grazina todel isaugom i kintamaji
+			//map kazka grazina todel isaugom i kintamaji
 			var allPrec = data.allItems.exp.map(function(cur){
 				//pvz 5 obj exp obj tai, 5 storins i allPrec var, veliau ji returiniam 
 				return cur.getPrecentages();
@@ -191,7 +191,8 @@ var UIController = (function(){
 		incomeLabel: '.budget__income--value',
 		expensesLabel: '.budget__expenses--value',
 		precentageLabel: '.budget__expenses--percentage',
-		container: '.container'
+		container: '.container',
+		expensesPrecLabel: '.item__percentage'
 
 	}
 
@@ -280,7 +281,35 @@ var UIController = (function(){
 			}
 		},
 
-		
+		displayPercentages: function(percentages){
+
+
+			//gaunu node lista
+			var fields = document.querySelectorAll(DOMStrings.expensesPrecLabel);
+
+			//lupinu per lista
+			var nodeListForEach = function(list, callback){
+				for(var i = 0; i< list.length; i++){
+					//mano calback function pareina i nodelistforeach funcion parametrus
+					//list[i] i current, o i i index
+					callback(list[i], i);
+				}
+			};
+
+			//nuo kur function prasideda tai ten  calbackas
+			nodeListForEach(fields, function(current, index){
+				if(percentages[index] > 0){
+
+				//percentages index, at 1 element -> 1 percentage ir t.t.
+					current.textContent = percentages[index] + '%';
+				}
+				else{
+					current.textContent = '--';
+				}
+
+			});
+
+		},
 
 		getDOMstrings: function(){
 			return DOMStrings
@@ -335,7 +364,8 @@ var controller = (function(budgetCtrl, UICtrl){
 		var precentages = budgetCtrl.getPrecentages();
 
 		//Update UI with new precentages
-		console.log(precentages);
+		// console.log(precentages);
+		UICtrl.displayPercentages(precentages);
 	}
 
 	var ctrlAddItem = function(){
